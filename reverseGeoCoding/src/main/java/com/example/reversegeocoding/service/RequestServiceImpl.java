@@ -39,11 +39,11 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ResponseEntity<String> saveAndGetRequest(Request request) {
+    public ResponseEntity<String> saveAndGetRequest(Request request) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         final String uri = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+request.getLatitude()+","+request.getLongitude()+"&key=AIzaSyC5__ph5uSMinywCZ2HQELkQKN7XexMzEs";
         try {
-            saveRequest(request);
+
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             Object result = restTemplate.getForObject(uri, Object.class);
@@ -52,10 +52,14 @@ public class RequestServiceImpl implements RequestService {
             assert result != null;
             JsonNode array =  mapper.readValue(json, JsonNode.class);
             JsonNode object = array.get("results").get(0);
-            return new ResponseEntity<>(object.get("formatted_address").textValue(), HttpStatus.OK);
-
+            if (object != null){
+                saveRequest(request);
+                return new ResponseEntity<>(object.get("formatted_address").textValue(), HttpStatus.OK);
+            }else {
+                throw new Exception("İstek Boş Döndü");
+            }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 }

@@ -7,5 +7,5 @@ public interface RequestService {
     Request saveRequest(Request request);
     ResponseEntity<Request> getRequest(Request request) throws Exception;
 
-    ResponseEntity<String> saveAndGetRequest(Request request);
+    ResponseEntity<String> saveAndGetRequest(Request request) throws Exception;
 }
